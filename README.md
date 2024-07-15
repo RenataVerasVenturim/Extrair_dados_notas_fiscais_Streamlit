@@ -2,10 +2,9 @@
 Extrair dados de notas fiscais com Tesseract OCR e expressões regulares
 
 
-REGEX utilizado para extrair número da nota fiscal = N[°º]?\s?\d{1,10}(?:\.\d{3})*
-
-número do empenho (em desenvolvimento...)= /(?i)20[0-9]{2}\s?ne\s?[0-9]{1,6}|[0-9]{3}/gm
-
+REGEX utilizado para extrair número da nota fiscal = r'N[°º]?\s?\d{1,10}(?:\.\d{3})*'
+    padrao_data_emissao = r'(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/[0-9]{4}'
+    padrao_cnpj_empresa = r'[0-9]{2}\.[0-9]{3}\.[0-9]{3}\/[0-9]{4}-[0-9]{2}'  
 
 Site utilizado: https://regex101.com/
 
