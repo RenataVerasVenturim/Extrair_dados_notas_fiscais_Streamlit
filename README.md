@@ -16,5 +16,6 @@ Site utilizado: https://regex101.com/
 
 
 Resultado:
-![image](https://github.com/user-attachments/assets/e7683202-43ba-41f1-bb55-929367e0b64b)
+![image](https://github.com/user-attachments/assets/191040f7-6cd8-45e7-aeb6-649c2dc6133b)
+
 
