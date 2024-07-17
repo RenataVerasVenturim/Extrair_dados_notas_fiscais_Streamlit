@@ -12,4 +12,4 @@ Site utilizado: https://regex101.com/
 
 
 Resultado:
-![image](https://github.com/RenataVerasVenturim/Extrair_dados_notas_fiscais/assets/129551549/eec39e96-fc5e-473f-ab0c-fd3920612105)
+![image](https://github.com/user-attachments/assets/f0e4e815-ee26-4fbb-98b3-2742e231f953)
