@@ -65,6 +65,7 @@
             box-shadow: 1px 1px #000;
             font-weight: 700;
             font-size: 120%;
+            transition: background-color 0.3s ease;
         }
 
         #btn:hover {
@@ -88,6 +89,14 @@
             background-color: #f0f0f0;
         }
     </style>
+    <script>
+        function alterarBotao() {
+            var btn = document.getElementById('btn');
+            btn.style.backgroundColor = 'gray';
+            btn.value = 'Aguarde...';
+            btn.disabled = true; // Desabilita o botão para evitar cliques adicionais
+        }
+    </script>
 </head>
 <body>
     <nav>
@@ -95,7 +104,7 @@
     </nav>
     <main>
         <h2>Seleção de Imagens de Notas Fiscais</h2>
-        <form action="/processar" method="post" enctype="multipart/form-data">
+        <form action="/processar" method="post" enctype="multipart/form-data" onsubmit="alterarBotao()">
             <div id="upload-form" ondragover="this.classList.add('highlight')" ondragleave="this.classList.remove('highlight')" ondrop="this.classList.remove('highlight')">
                 <label for="imagens">Arraste e solte as imagens de notas fiscais aqui<br>ou clique para selecionar</label>
                 <br>
