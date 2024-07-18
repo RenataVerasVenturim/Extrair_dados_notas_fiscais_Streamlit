@@ -1,0 +1,46 @@
+<!-- resultado.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Resultados</title>
+</head>
+<body>
+    <!-- Botão Voltar -->
+    <a href="/" class="voltar">⟵ Voltar</a>
+    
+    <h1>Resultados do Processamento</h1>
+
+    {% if resultados %}
+        <table border="1">
+            <tr>
+                <th>Nome do Arquivo</th>
+                <th>Número da NF</th>
+                <th>Data de Emissão</th>
+                <th>CNPJ da Empresa</th>                                        
+                <th>Empenho</th>               
+                <th>Processo</th>  
+                <th>Link para Baixar</th>
+                <th>Link para Visualizar</th>
+            </tr>
+            {% for resultado in resultados %}
+                <tr>
+                    <td>{{ resultado['nome_arquivo'] }}</td>
+                    <td>{{ resultado['numero_nf'] }}</td>
+                    <td>{{ resultado['data_emissao'] }}</td>
+                    <td>{{ resultado['cnpj_empresa'] }}</td>                                     
+                    <td>{{ resultado['empenho'] }}</td>
+                    <td>{{ resultado['processo'] }}</td>   
+                    <td><a href="{{ url_for('baixar_nota', nome_arquivo=resultado['nome_arquivo']) }}">Baixar</a></td>
+                    <td><a href="{{ url_for('visualizar_nota', nome_arquivo=resultado['nome_arquivo']) }}" target="_blank">Visualizar</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <p>Tempo total de processamento: {{ tempo_total }} segundos</p>
+    {% else %}
+        <p>Nenhum resultado encontrado.</p>
+    {% endif %}
+</body>
+</html>

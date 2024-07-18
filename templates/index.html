@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleção de Imagens de Notas Fiscais</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='faviconuff.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Handjet&family=Tomorrow&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <img src="{{ url_for('static', filename='logo.png') }}" width="100" height="100" alt="logo da uff">
+    </nav>
+    <main>
+        <h2>Extrator de dados de Notas Fiscais</h2>
+        <form id="upload-form" action="/processar" method="post" enctype="multipart/form-data">
+            <div id="upload-area" ondragover="this.classList.add('highlight')" ondragleave="this.classList.remove('highlight')" ondrop="this.classList.remove('highlight')">
+                <label for="imagens">Arraste e solte as imagens de notas fiscais aqui<br>ou clique para selecionar (Formatos compatíveis: pdf, jpeg, jpg, png)</label>
+                <br>
+                <input type="file" id="imagens" name="imagens" accept="image/png, image/jpeg" multiple>
+            </div>
+            <br>
+            <input type="button" id="btn" value="Processar" onclick="verificarArquivos()">
+        </form>
+
+        <div id="resultado">
+            <!-- Aqui será exibido o resultado após o processamento -->
+        </div>
+    </main>
+    <footer>
+        <p>© 2024 Universidade Federal Fluminense. Todos os direitos reservados.</p>
+        <p>PROPPI – Pró-Reitoria de Pesquisa, Pós-Graduação e Inovação</p>
+        <p>Divisão Financeira, Contábil e do Patrimônio (DFCP)</p>
+        <p>Endereço: Rua Miguel de Frias, 9, 3º andar, sala 310, Icaraí, Niterói – RJ. CEP: 24220-900</p>
+        <p>Contato: compras.proppi@id.uff.br</p>
+        <p>Criado por: Renata Veras Venturim</p>
+    </footer>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

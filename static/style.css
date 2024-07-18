@@ -1,0 +1,191 @@
+body {
+    font-family: 'Tomorrow', Arial, Helvetica, sans-serif;
+    margin: 0;
+    background-color: #00b4ff;
+    font-size: medium;
+    text-align: center;
+}
+
+nav {
+    background-color: #f2f2f2;
+    text-align: left;
+    border: 1px solid #bfb8b8;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 2px 2px rgba(0, 0, 0, .759);
+    margin: 2px 5px 7px;
+}
+
+main {
+    background-color: #fff;
+    border: 1px solid #bfb8b8;
+    padding: 35px 5px;
+    border-radius: 5px;
+    box-shadow: 2px 2px rgba(0, 0, 0, .759);
+    margin: 2px 5px 7px;
+}
+
+footer {
+    background-color: #333;
+    border-radius: 5px;
+    color: #fff;
+    border: 1px solid #bfb8b8;
+    box-shadow: 2px 2px rgba(0, 0, 0, .759);
+    margin: 2px 5px 7px;
+    padding: 15px;
+    text-align: center;
+}
+
+h2 {
+    margin: 45px 0;
+}
+
+input {
+    padding-bottom: 15px;
+}
+
+#btn {
+    background-color: #ff8700;
+    margin: 15px;
+    padding: 12px 30px;
+    cursor: pointer;
+    border-radius: 15px;
+    box-shadow: 1px 1px #000;
+    font-weight: 700;
+    font-size: 120%;
+    transition: background-color 0.3s ease;
+}
+
+#btn:hover {
+    background-color: #ff88008d;
+}
+
+#btn:active {
+    background-color: gray;
+    box-shadow: 0 0 #000;
+}
+
+#upload-form {
+    border: 2px dashed #ccc;
+    padding: 80px 20px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin-top: 20px;
+}
+
+#upload-form.highlight {
+    background-color: #f0f0f0;
+}
+
+/* Estilo para o botão Voltar */
+a.voltar {
+    display: inline-block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #007bff; /* Cor de fundo */
+    border: 2px solid #007bff; /* Cor da borda */
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+a.voltar:hover {
+    background-color: #0056b3; /* Cor de fundo ao passar o mouse */
+    border-color: #0056b3; /* Cor da borda ao passar o mouse */
+}
+
+
+#-------------------------resultado.html-------------------------------------------
+
+/* Estilos para o body específicos do resultado.html */
+body.resultado {
+    font-family: 'Tomorrow', Arial, Helvetica, sans-serif;
+    margin: 0;
+    background-color: #00b4ff;
+    font-size: medium;
+    text-align: center;
+}
+
+/* Estilos para o resultado específicos do resultado.html */
+#resultado.resultado {
+    background-color: #fff;
+    border: 1px solid #bfb8b8;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 2px 2px rgba(0, 0, 0, .759);
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+/* Estilos para as listas específicos do resultado.html */
+ul.resultado {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Estilos para os itens de lista específicos do resultado.html */
+li.resultado {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+/* Estilos para os títulos específicos do resultado.html */
+h1.resultado {
+    text-align: center;
+    margin: 20px 0;
+}
+
+h2.resultado {
+    text-align: center;
+    margin: 30px 0;
+}
+
+h3.resultado {
+    margin: 10px 0;
+}
+
+p.resultado {
+    margin: 5px 0;
+}
+
+
+/* MODAL
+/* Estilos para o modal */
+.modal {
+    display: none; /* Ocultar modal por padrão */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5); /* Fundo preto com transparência */
+}
+
+/* Conteúdo do modal */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    text-align: center;
+}
+
+/* Botão para fechar o modal */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
