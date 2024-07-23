@@ -6,7 +6,7 @@ import pytesseract
 import re
 import time
 import shutil
-import threading
+from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 import fitz  # PyMuPDF
 from PIL import Image
@@ -24,51 +24,70 @@ inicio = time.time()
 
 # Função para limpar o diretório 'Notas'
 def limpar_diretorio_notas():
+    start_time = time.time()
     diretorio_notas = app.config['UPLOAD_FOLDER']
     if os.path.exists(diretorio_notas):
         shutil.rmtree(diretorio_notas)
     os.makedirs(diretorio_notas)
+    end_time = time.time()
+    print(f"Tempo para limpar o diretório 'Notas': {end_time - start_time:.2f} segundos")
 
 # Função para limpar o diretório 'Notas_pdf'
 def limpar_diretorio_notas_pdf():
+    start_time = time.time()
     diretorio_notas_pdf = app.config['UPLOAD_FOLDER_PDF']
     if os.path.exists(diretorio_notas_pdf):
         shutil.rmtree(diretorio_notas_pdf)
     os.makedirs(diretorio_notas_pdf)
+    end_time = time.time()
+    print(f"Tempo para limpar o diretório 'Notas_pdf': {end_time - start_time:.2f} segundos")
 
 # Função para converter PDF em imagem PNG usando PyMuPDF
 def converter_pdf_para_png(pdf_file):
-    document = fitz.open(pdf_file)
-    imagens_salvas = []
     
-    # Definir DPI alto para imagens
-    dpi = 300  # Exemplo de DPI alto, ajuste conforme necessário
+    try:
+        document = fitz.open(pdf_file)
+        imagens = []
 
-    # Converter apenas a primeira página
-    page = document.load_page(0)  # Carregar primeira página (índice 0)
-    
-    # Obter pixmap com DPI especificado
-    pix = page.get_pixmap(matrix=fitz.Matrix(dpi/72, dpi/72))
-    
-    # Converter pixmap para imagem PIL
-    img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
-    
-    # Nome do arquivo para salvar
-    nome_arquivo_png = os.path.join(app.config['UPLOAD_FOLDER'], f"{os.path.basename(pdf_file).split('.')[0]}_page_1.png")
-    
-    # Salvar imagem
-    img.save(nome_arquivo_png)
-    
-    # Adicionar caminho do arquivo salvo à lista
-    imagens_salvas.append(nome_arquivo_png)
-    
-    # Fechar documento após o uso
-    document.close()
-    
-    return imagens_salvas
+        dpi = 300
+        largura_total = 0
+        altura_total = 0
 
+        # Calcular as dimensões totais
+        for page_number in range(len(document)):
+            page = document.load_page(page_number)
+            pix = page.get_pixmap(matrix=fitz.Matrix(dpi/72, dpi/72))
+            imagens.append(pix)
+            largura_total = max(largura_total, pix.width)
+            altura_total += pix.height
+
+        # Criar uma imagem grande para combinar todas as páginas
+        img_combined = Image.new("RGB", (largura_total, altura_total))
+        y_offset = 0
+
+        # Adicionar cada imagem de página à imagem combinada
+        for pix in imagens:
+            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            img_combined.paste(img, (0, y_offset))
+            y_offset += pix.height
+        
+        nome_base_arquivo = os.path.splitext(os.path.basename(pdf_file))[0]
+        nome_arquivo_png = os.path.join(app.config['UPLOAD_FOLDER'], f"{secure_filename(nome_base_arquivo)}_combined.png")
+        img_combined.save(nome_arquivo_png)
+
+        document.close()
+        return [nome_arquivo_png]
+
+    except PermissionError as e:
+        print(f"Erro de permissão ao acessar o arquivo '{pdf_file}': {e}")
+        return []
+
+    except Exception as e:
+        print(f"Erro ao converter o arquivo '{pdf_file}': {e}")
+        return []
 # Função para executar OCR e buscar os padrões no texto extraído
 def extrair_dados_da_nf(image):
+    start_time = time.time()
     # Executar OCR na imagem
     texto = pytesseract.image_to_string(image)
 
@@ -93,19 +112,29 @@ def extrair_dados_da_nf(image):
     empenho = match_empenho.group(0) if match_empenho else None
     processo = match_processo.group(0) if match_processo else None
 
+    end_time = time.time()
+    print(f"Tempo para extrair dados da nota fiscal: {end_time - start_time:.2f} segundos")
+
     return numero, data, cnpj, empenho, processo
 
 # Função para ajustar o brilho e extrair os dados
 def ajustar_brilho_e_extrair_dados(image, brightness):
+    start_time = time.time()
     # Ajustar o brilho
     adjusted_image = cv2.add(image, brightness)
 
     # Extrair dados da imagem ajustada
-    return extrair_dados_da_nf(adjusted_image)
+    resultado = extrair_dados_da_nf(adjusted_image)
+    end_time = time.time()
+    print(f"Tempo para ajustar brilho e extrair dados: {end_time - start_time:.2f} segundos")
+    
+    return resultado
 
 # Função para processar uma imagem
 @lru_cache(maxsize=32)  # Cache com capacidade para 32 resultados
 def processar_imagem(nome_arquivo):
+    start_time = time.time()
+    
     # Carregar a imagem usando OpenCV
     caminho_imagem = os.path.join(app.config['UPLOAD_FOLDER'], nome_arquivo)
     image = cv2.imread(caminho_imagem)
@@ -119,25 +148,31 @@ def processar_imagem(nome_arquivo):
     contrast = 1.5
     adjusted_image = cv2.convertScaleAbs(image, alpha=contrast, beta=0)
 
-    # Variáveis para armazenar os resultados
-    numero, data, cnpj, empenho, processo = None, None, None, None, None
-
-    # Tentar extrair cada variável com ajustes de brilho otimizados
+    # Tentar ajustar o brilho em níveis otimizados
     ajustes_de_brilho = [0, 50, 80]  # Exemplo de ajustes de brilho
+    numero, data, cnpj, empenho, processo = None, None, None, None, None
+    
     for brilho in ajustes_de_brilho:
         resultado = ajustar_brilho_e_extrair_dados(adjusted_image, brilho)
-        if not numero and resultado[0]:
+        if resultado[0]:  # Se o número foi encontrado
             numero = resultado[0]
-        if not data and resultado[1]:
+        if resultado[1]:  # Se a data foi encontrada
             data = resultado[1]
-        if not cnpj and resultado[2]:
+        if resultado[2]:  # Se o CNPJ foi encontrado
             cnpj = resultado[2]
-        if not empenho and resultado[3]:
+        if resultado[3]:  # Se o empenho foi encontrado
             empenho = resultado[3]
-        if not processo and resultado[4]:
+        if resultado[4]:  # Se o processo foi encontrado
             processo = resultado[4]
+        
+        # Se todos os dados foram encontrados, parar a iteração
+        if all([numero, data, cnpj]):
+            break
 
     # Retornar os resultados incluindo o nome do arquivo
+    end_time = time.time()
+    print(f"Tempo para processar a imagem '{nome_arquivo}': {end_time - start_time:.2f} segundos")
+    
     return {
         'nome_arquivo': nome_arquivo,
         'numero_nf': numero,
@@ -147,10 +182,10 @@ def processar_imagem(nome_arquivo):
         'processo': processo
     }
 
-# Função para processar todas as imagens na pasta 'Notas' usando threads
+# Função para processar todas as imagens na pasta 'Notas' usando ThreadPoolExecutor
 def processar_imagens_notas():
+    start_time = time.time()
     resultados = []
-    threads = []
 
     # Diretório onde estão as imagens de notas fiscais
     diretorio_notas = app.config['UPLOAD_FOLDER']
@@ -158,78 +193,102 @@ def processar_imagens_notas():
     # Diretório onde estão os PDFs temporários
     diretorio_notas_pdf = app.config['UPLOAD_FOLDER_PDF']
 
-    # Lista para armazenar os nomes de arquivo de imagem
-    image_files = set()  # Usar um conjunto para evitar duplicatas
+    # Verificar se o diretório de PDFs existe
+    if not os.path.exists(diretorio_notas_pdf):
+        print(f"O diretório '{diretorio_notas_pdf}' não existe.")
+        return []
 
-    # Iterar sobre todos os arquivos na pasta 'Notas_pdf' para converter PDF em PNG
-    for nome_arquivo in os.listdir(diretorio_notas_pdf):
-        caminho_arquivo_pdf = os.path.join(diretorio_notas_pdf, nome_arquivo)
-        if nome_arquivo.lower().endswith('.pdf'):
-            imagens_png = converter_pdf_para_png(caminho_arquivo_pdf)
-            for png in imagens_png:
-                image_files.add(os.path.basename(png))
+    # Lista de arquivos PDF no diretório
+    arquivos_pdf = [f for f in os.listdir(diretorio_notas_pdf) if f.endswith('.pdf')]
 
-    # Iterar sobre todos os arquivos na pasta 'Notas'
-    for nome_arquivo in os.listdir(diretorio_notas):
-        if nome_arquivo.lower().endswith(('.png', '.jpg', '.jpeg')):
-            image_files.add(nome_arquivo)
+    # Converter PDFs para imagens usando ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        resultados_futuros = list(executor.map(lambda f: converter_pdf_para_png(os.path.join(diretorio_notas_pdf, f)), arquivos_pdf))
 
-    # Processar imagens agora que todos os arquivos estão na pasta 'Notas'
-    for nome_arquivo in image_files:
-        thread = threading.Thread(target=lambda p=nome_arquivo: resultados.append(processar_imagem(p)))
-        threads.append(thread)
-        thread.start()
+    # Lista de imagens convertidas
+    imagens = [item for sublist in resultados_futuros for item in sublist]
 
-    # Aguardar todas as threads terminarem
-    for thread in threads:
-        thread.join()
+    # Verificar se o diretório de notas existe
+    if not os.path.exists(diretorio_notas):
+        print(f"O diretório '{diretorio_notas}' não existe.")
+        return []
 
-    # Calcular o tempo total de execução
-    fim = time.time()
-    tempo_total = fim - inicio
+    # Lista de arquivos de imagem no diretório
+    arquivos_imagem = [f for f in os.listdir(diretorio_notas) if f.endswith('.png')]
+
+    # Processar cada imagem e coletar resultados
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        resultados_futuros = list(executor.map(processar_imagem, arquivos_imagem))
+
+    resultados = [resultado for resultado in resultados_futuros if resultado is not None]
+
+    end_time = time.time()
+    print(f"Tempo total para processar imagens: {end_time - start_time:.2f} segundos")
+
+    end_time = time.time()
+    tempo_total = end_time - start_time
+    print(f"Tempo total para processar imagens: {tempo_total:.2f} segundos")
 
     return resultados, tempo_total
 
-# Rotas Flask
+# Rota inicial
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# Rota para processar PDFs e extrair dados
 @app.route('/processar', methods=['POST'])
-def upload_imagens():
-    limpar_diretorio_notas()
-    limpar_diretorio_notas_pdf()
-
-    if 'imagens' not in request.files:
-        return "Nenhum arquivo enviado."
-
-    arquivos = request.files.getlist('imagens')
-
+def processar():
+    # Verificar se o diretório 'Notas' existe
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
-    
+
+    # Verificar se o diretório 'Notas_pdf' existe
     if not os.path.exists(app.config['UPLOAD_FOLDER_PDF']):
         os.makedirs(app.config['UPLOAD_FOLDER_PDF'])
 
-    for arquivo in arquivos:
-        if arquivo.filename.lower().endswith('.pdf'):
-            arquivo.save(os.path.join(app.config['UPLOAD_FOLDER_PDF'], secure_filename(arquivo.filename)))
-        else:
-            arquivo.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(arquivo.filename)))
+    # Limpar diretórios de PDFs e imagens
+    limpar_diretorio_notas()
+    limpar_diretorio_notas_pdf()
 
+    # Verificar se há arquivos enviados
+    if 'file' not in request.files:
+        return "Nenhum arquivo foi enviado.", 400
+
+    files = request.files.getlist('file')
+
+    for file in files:
+        if file.filename == '':
+            return 'Nenhum arquivo selecionado', 400
+        if file:
+            # Salvar o arquivo PDF temporariamente
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER_PDF'], filename)
+            file.save(file_path)
+
+    # Processar as imagens das notas e extrair os dados
     resultados, tempo_total = processar_imagens_notas()
 
-    return render_template('resultado.html', resultados=resultados, tempo_total=tempo_total)
+    # Renderizar os resultados na página
+    return render_template('resultados.html', resultados=resultados, tempo_total=tempo_total)
 
-@app.route('/baixar/<nome_arquivo>', methods=['GET'])
-def baixar_nota(nome_arquivo):
-    caminho_arquivo = os.path.join(app.config['UPLOAD_FOLDER'], nome_arquivo)
-    return send_file(caminho_arquivo, as_attachment=True)
+# Rota para baixar a imagem processada
+@app.route('/baixar/<nome_arquivo>')
+def baixar_imagem(nome_arquivo):
+    diretorio_notas = app.config['UPLOAD_FOLDER']
+    caminho_arquivo = os.path.join(diretorio_notas, nome_arquivo)
+    if os.path.exists(caminho_arquivo):
+        return send_file(caminho_arquivo, as_attachment=True)
+    return "Arquivo não encontrado", 404
 
-@app.route('/visualizar/<nome_arquivo>', methods=['GET'])
-def visualizar_nota(nome_arquivo):
-    caminho_arquivo = os.path.join(app.config['UPLOAD_FOLDER'], nome_arquivo)
-    return send_file(caminho_arquivo)
+# Rota para visualizar a imagem processada
+@app.route('/visualizar/<nome_arquivo>')
+def visualizar_imagem(nome_arquivo):
+    diretorio_notas = app.config['UPLOAD_FOLDER']
+    caminho_arquivo = os.path.join(diretorio_notas, nome_arquivo)
+    if os.path.exists(caminho_arquivo):
+        return send_file(caminho_arquivo)
+    return "Arquivo não encontrado", 404
 
 if __name__ == '__main__':
     app.run(debug=True)

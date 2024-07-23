@@ -11,10 +11,10 @@ function verificarArquivos() {
     // Validar os tipos de arquivo permitidos
     for (var i = 0; i < input.files.length; i++) {
         var file = input.files[i];
-        var allowedTypes = ['image/png', 'image/jpeg', 'image/jpg','application/pdf'];
+        var allowedTypes = [/*'image/png', 'image/jpeg', 'image/jpg',*/'application/pdf'];
 
         if (allowedTypes.indexOf(file.type) === -1) {
-            alert("Formato de arquivo não suportado. Insira apenas arquivos .pdf, .png ou .jpeg");
+            alert("Formato de arquivo não suportado. Insira apenas arquivos .pdf");
             return;
         }
     }
@@ -22,3 +22,4 @@ function verificarArquivos() {
     // Se todos os arquivos forem válidos, submeter o formulário
     document.getElementById('upload-form').submit();
 }
+

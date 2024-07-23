@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seleção de Imagens de Notas Fiscais</title>
+    <title>ExtratorNotas</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='faviconuff.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,9 +18,9 @@
         <h2>Extrator de dados de Notas Fiscais</h2>
         <form id="upload-form" action="/processar" method="post" enctype="multipart/form-data">
             <div id="upload-area" ondragover="this.classList.add('highlight')" ondragleave="this.classList.remove('highlight')" ondrop="this.classList.remove('highlight')">
-                <label for="imagens">Arraste e solte as imagens de notas fiscais aqui<br>ou clique para selecionar (Formatos compatíveis: pdf, jpeg, jpg, png)</label>
+                <label for="imagens">Arraste e solte as imagens de notas fiscais aqui<br>ou clique para selecionar (Formatos compatíveis: pdf)</label>
                 <br>
-                <input type="file" id="imagens" name="imagens" accept="image/png, image/jpeg" multiple>
+                <input type="file" id="imagens" name="file" accept="image/png, image/jpeg, application/pdf" multiple>
             </div>
             <br>
             <input type="button" id="btn" value="Processar" onclick="verificarArquivos()">

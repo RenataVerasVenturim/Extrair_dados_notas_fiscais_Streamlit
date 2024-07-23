@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>Resultados da Extração</title>
+</head>
+<body class="resultado">
+    <!-- Botão Voltar -->
+    <a href="/" class="voltar">⟵ Voltar</a>
+
+    <h1>Resultados da Extração</h1>
+
+    {% if resultados %}
+        <div class="resultado-table-container">
+            <table class="resultado-table">
+                <thead>
+                    <tr>
+                        <th>Nome do Arquivo</th>
+                        <th>Número da NF</th>
+                        <th>Data de Emissão</th>
+                        <th>CNPJ</th>
+                        <th>Empenho</th>
+                        <th>Processo</th>
+                        <th>Visualizar</th>
+                        <th>Baixar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resultado in resultados %}
+                    <tr>
+                        <td>{{ resultado.nome_arquivo }}</td>
+                        <td>{{ resultado.numero_nf }}</td>
+                        <td>{{ resultado.data_emissao }}</td>
+                        <td>{{ resultado.cnpj_empresa }}</td>
+                        <td>{{ resultado.empenho }}</td>
+                        <td>{{ resultado.processo }}</td>
+                        <td>
+                            <a href="{{ url_for('visualizar_imagem', nome_arquivo=resultado.nome_arquivo) }}" target="_blank" class="btn visualizar">Visualizar</a>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('baixar_imagem', nome_arquivo=resultado.nome_arquivo) }}" class="btn baixar">Baixar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="tempo-total">Tempo total de processamento: {{ tempo_total }} segundos</p>
+    {% else %}
+        <p>Nenhum resultado encontrado.</p>
+    {% endif %}
+</body>
+</html>
