@@ -92,10 +92,10 @@ def extrair_dados_da_nf(image):
     texto = pytesseract.image_to_string(image)
 
     # Definir os padrões regex
-    padrao_numero_nf = r'N[°º]?\s?\d{1,10}(?:\.\d{3})*'
+    padrao_numero_nf = r'N[°º]\s?[.]?\s?\d{1,10}(?:\.\d{3})*|[0-9]{3}\.[0-9]{3}\.[0-9]{3}'
     padrao_data_emissao = r'(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/[0-9]{4}'
     padrao_cnpj_empresa = r'[0-9]{2}\.[0-9]{3}\.[0-9]{3}\/[0-9]{4}-[0-9]{2}'
-    padrao_empenho = r'[2][0][0-9]{2}\s*[NEne]{2}\s*[0-9]{1,6}|[0-9]{3}\/[2][0][0-9]{2}'
+    padrao_empenho = r'\b(?:[2][0][0-9]{2}\s*[NEne]{2}\s*[0-9]{1,6}|[0-9]{3}\/[2][0][0-9]{2}|\d{4}[NEne]\d{2})\b'
     padrao_processo = r'[2][3][0][6][9][., ][0-9]{6}\/[0-9]{4}[-, ][0-9]{2}'
 
     # Buscar os padrões no texto extraído
