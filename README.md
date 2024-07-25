@@ -5,7 +5,7 @@ Extrair dados de notas fiscais com Tesseract OCR e expressões regulares
 
 <b>Clonar projeto</b>
 
-    git clone https://github.com/RenataVerasVenturim/Extrair_dados_notas_fiscais
+    git clone  https://github.com/RenataVerasVenturim/Extrair_dados_notas_fiscais --config http.proxy=
 
 <b>Comando no terminal - baixar bibliotecas</b>
     
