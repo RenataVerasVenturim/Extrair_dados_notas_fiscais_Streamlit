@@ -9,7 +9,7 @@ Extrair dados de notas fiscais com Tesseract OCR e expressões regulares
 
 <b>Acessar pasta do projeto (verifique o seu)</b>
 
-    cd C:\Users\PROPPI_01\Desktop\ocr_github_projeto 
+    cd C:\Users\PROPPI_01\Desktop\ocr_github_projeto\Extrair_dados_notas_fiscais
     
 <b>Comando no terminal - baixar bibliotecas</b>
     
