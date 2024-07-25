@@ -16,7 +16,7 @@ app.config['UPLOAD_FOLDER'] = 'Notas'  # Pasta onde as imagens de notas fiscais 
 app.config['UPLOAD_FOLDER_PDF'] = 'Notas_pdf'  # Pasta onde os PDFs temporários serão armazenados
 
 # Configurar o caminho do Tesseract OCR
-caminho_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+caminho_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe" #No pc do trabalho: r"D:\\Tesseract-OCR\\tesseract.exe"
 pytesseract.pytesseract.tesseract_cmd = caminho_tesseract
 
 # Registrar o tempo inicial
