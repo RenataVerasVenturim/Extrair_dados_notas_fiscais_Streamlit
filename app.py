@@ -7,6 +7,8 @@ import pytesseract
 import re
 import streamlit as st
 
+pytesseract.pytesseract.tesseract_cmd = r"/usr/bin/tesseract"
+
 # Função para converter PDF em imagem PNG usando PyMuPDF
 def converter_pdf_para_png(pdf_file):
     try:
