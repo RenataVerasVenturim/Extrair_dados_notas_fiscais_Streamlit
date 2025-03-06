@@ -1,23 +1,22 @@
 import os
-import cv2
-import pytesseract
-import re
-import time
+import tempfile
 import shutil
-import streamlit as st
-from concurrent.futures import ThreadPoolExecutor
-from functools import lru_cache
 import fitz  # PyMuPDF
 from PIL import Image
-
-# Configurar o caminho do Tesseract OCR
-caminho_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-pytesseract.pytesseract.tesseract_cmd = caminho_tesseract
+import pytesseract
+import re
+import streamlit as st
 
 # Função para converter PDF em imagem PNG usando PyMuPDF
 def converter_pdf_para_png(pdf_file):
     try:
-        document = fitz.open(pdf_file)
+        # Salva o arquivo temporariamente
+        temp_dir = tempfile.mkdtemp()
+        temp_pdf_path = os.path.join(temp_dir, pdf_file.name)
+        with open(temp_pdf_path, "wb") as f:
+            f.write(pdf_file.getbuffer())
+        
+        document = fitz.open(temp_pdf_path)
         imagens = []
         dpi = 300
         largura_total, altura_total = 0, 0
@@ -39,6 +38,7 @@ def converter_pdf_para_png(pdf_file):
             y_offset += pix.height
         
         document.close()
+        shutil.rmtree(temp_dir)  # Remove o diretório temporário
         return img_combined
     except Exception as e:
         st.error(f"Erro ao converter o PDF: {e}")
