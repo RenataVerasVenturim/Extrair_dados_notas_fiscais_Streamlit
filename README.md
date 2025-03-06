@@ -1,6 +1,9 @@
 # Extrair_dados_notas_fiscais
 Extrair dados de notas fiscais com Tesseract OCR e expressões regulares
 
+Link Streamlit com a aplicação: https://renataverasventurimextrairdadosnotasfiscais.streamlit.app/
+
+
 ![InShot_20240724_162829677-ezgif com-video-to-gif-converter (2)](https://github.com/user-attachments/assets/3736fe43-9d0f-45a6-adf6-6efe63a0429d)
 
 <b>Necessário ter instalado:</b>
